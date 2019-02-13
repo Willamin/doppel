@@ -1,5 +1,7 @@
 # doppel
 
+Doppel intercepts HTTP requests, then replays the responses later.
+
 ## Contributing
 
 1. Fork it ( https://github.com/Willamin/doppel/fork )
