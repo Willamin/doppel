@@ -15,14 +15,14 @@ class Doppel::Interceptor
       end
       context.response.puts(cached_response.body)
     else
-      io = IO::Memory.new
+      tee = IO::Memory.new
       original_output = context.response.output
-      context.response.output = IO::MultiWriter.new(io, original_output, sync_close: true)
+      context.response.output = IO::MultiWriter.new(tee, original_output, sync_close: true)
       call_next(context)
       to_save = Doppel::Response.new
       to_save.status_code = context.response.status_code
       to_save.headers = context.response.headers
-      to_save.body = io.rewind.gets_to_end
+      to_save.body = tee.rewind.gets_to_end
       @cache[request.path] = to_save
     end
   end
