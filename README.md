@@ -2,6 +2,14 @@
 
 Doppel intercepts HTTP requests, then replays the responses later.
 
+## Roadmap
+
+Next steps:
+- Save cached responses to the disk
+- Load cached responses from disk
+- handle tls on remote servers
+- handle query params
+
 ## Contributing
 
 1. Fork it ( https://github.com/Willamin/doppel/fork )
