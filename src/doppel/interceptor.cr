@@ -20,18 +20,19 @@ class Doppel::Interceptor
       context.response.output = IO::MultiWriter.new(tee, original_output, sync_close: true)
       call_next(context)
 
-      Doppel::Response.new.tap do |response|
-        response.status_code = context.response.status_code
-        response.headers = context.response.headers
-        response.body = tee.rewind.gets_to_end
-        @cache[request.path] = response
-      end
+      @cache[request.path] = Doppel::Response.new(
+        context.response.status_code,
+        context.response.headers,
+        tee.rewind.gets_to_end
+      )
     end
   end
 end
 
 class Doppel::Response
-  property! body : String
-  property! headers : HTTP::Headers
-  property! status_code : Int32
+  property status_code : Int32
+  property headers : HTTP::Headers
+  property body : String
+
+  def initialize(@status_code, @headers, @body); end
 end
