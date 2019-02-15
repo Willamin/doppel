@@ -19,11 +19,13 @@ class Doppel::Interceptor
       original_output = context.response.output
       context.response.output = IO::MultiWriter.new(tee, original_output, sync_close: true)
       call_next(context)
-      to_save = Doppel::Response.new
-      to_save.status_code = context.response.status_code
-      to_save.headers = context.response.headers
-      to_save.body = tee.rewind.gets_to_end
-      @cache[request.path] = to_save
+
+      Doppel::Response.new.tap do |response|
+        response.status_code = context.response.status_code
+        response.headers = context.response.headers
+        response.body = tee.rewind.gets_to_end
+        @cache[request.path] = response
+      end
     end
   end
 end
