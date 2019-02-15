@@ -5,15 +5,10 @@ todo = :nothing
 forwarding_host? : String? = nil
 
 parser = OptionParser.new do |parser|
-  parser.banner = "usage: doppel "
+  parser.banner = "usage: doppel [OPTIONS]"
 
   parser.on("-v", "--version", "display the version") { todo = :version }
   parser.on("-h", "--help", "show this help") { todo = :help }
-
-  parser.separator
-
-  parser.on("-i", "--intercept", "Enter intercept mode") { todo = :intercept }
-  parser.on("-p", "--playback", "Enter playback mode") { todo = :playback }
 
   parser.separator("options")
 
@@ -25,17 +20,13 @@ parser.parse!
 case todo
 when :version
   puts Doppel::VERSION
-when :intercept
-  unless forwarding_host?
-    puts("forwarding host must be set")
-    exit(1)
-  end
-  Doppel::Interceptor.new(forwarding_host?.as(String))
-when :playback
-  Doppel.playback
 when :help
   puts(parser)
-else
-  puts(parser)
-  exit 1
 end
+
+unless forwarding_host?
+  puts("forwarding host must be set")
+  exit(1)
+end
+
+Doppel::Interceptor.new(forwarding_host?.as(String))

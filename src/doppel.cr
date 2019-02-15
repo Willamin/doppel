@@ -3,10 +3,6 @@ require "http"
 module Doppel
   VERSION = {{ `shards version #{__DIR__}`.chomp.stringify }}
 
-  def self.playback
-    puts "playing back"
-  end
-
   class Route
     @path : String
     @response : HTTP::Server::Response
