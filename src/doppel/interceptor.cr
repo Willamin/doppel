@@ -23,7 +23,6 @@ class Doppel::Interceptor
       to_save.status_code = context.response.status_code
       to_save.headers = context.response.headers
       to_save.body = io.rewind.gets_to_end
-      pp to_save
       @cache[request.path] = to_save
     end
   end
