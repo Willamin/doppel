@@ -29,4 +29,4 @@ unless forwarding_host?
   exit(1)
 end
 
-Doppel::Interceptor.new(forwarding_host?.as(String))
+Doppel.run(forwarding_host?.as(String))
