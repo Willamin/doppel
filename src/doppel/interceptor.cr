@@ -1,3 +1,5 @@
+require "json"
+
 class Doppel::Interceptor
   include HTTP::Handler
 
@@ -35,4 +37,10 @@ class Doppel::Response
   property body : String
 
   def initialize(@status_code, @headers, @body); end
+
+  JSON.mapping(
+    status_code: Int32,
+    headers: HTTP::Headers,
+    body: String,
+  )
 end
