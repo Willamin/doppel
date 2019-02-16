@@ -3,14 +3,25 @@ require "json"
 class Doppel::Interceptor
   include HTTP::Handler
 
-  def initialize
+  def initialize(@file : File)
     @cache = Hash(String, Doppel::Response).new
+
+    Signal::INT.trap do
+      print "saving cache..."
+      @file.puts(@cache.to_json)
+      @file.close
+      puts "done!"
+      exit(0)
+    end
   end
 
   def call(context : HTTP::Server::Context)
     request = context.request
-    if cached_response = @cache[request.path]?
-      STDERR.puts("serving #{request.method} #{request.path}")
+
+    cache_path = [request.method, request.path].join(" ")
+
+    if cached_response = @cache[cache_path]?
+      STDERR.puts("serving #{cache_path}")
       context.response.status_code = cached_response.status_code
       cached_response.headers.each do |key, values|
         context.response.headers[key] = values
@@ -22,7 +33,7 @@ class Doppel::Interceptor
       context.response.output = IO::MultiWriter.new(tee, original_output, sync_close: true)
       call_next(context)
 
-      @cache[request.path] = Doppel::Response.new(
+      @cache[cache_path] = Doppel::Response.new(
         context.response.status_code,
         context.response.headers,
         tee.rewind.gets_to_end
